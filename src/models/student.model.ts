@@ -1,12 +1,39 @@
-import { Model, DataTypes } from "sequelize";
+import { Model, DataTypes, InferAttributes } from "sequelize";
 import { sequelize } from "../utils/connect";
-import { StudentType } from "../types/customTypes";
 import { v4 as uuidv4 } from "uuid";
+import { StudentType } from "../types/customTypes";
 
-//other models
-import { SessionModel } from "./session.model";
+export class Student extends Model<StudentType> {
+    declare id: number;
+    declare firstname: string;
+    declare lastname: string;
+    declare email: string;
+    declare password: string;
+    declare telephone: number;
+    declare regNo: string;
+    declare dateOfBirth: string;
+    declare isVerified: boolean;
+    declare student_uniqueId: string;
+    declare verificationCode: string;
+    declare passwordResetCode: string | null;
 
-class Student extends Model<StudentType> {};
+};
+
+const regNoGenerator = async () => {
+    let condition = true;
+    let regNo;
+    while(condition){
+        const randomNo = Math.floor(Math.random() * 1000000);
+        const year = new Date().getFullYear();
+        regNo = `${year}/${randomNo}`;
+        const alreadyExist = await StudentModel.findOne({where:{regNo:regNo}});
+        if(!alreadyExist){
+            condition = false;
+            break;
+        }
+    } 
+    return regNo;
+}
 
 export const StudentModel = sequelize.define<Student>('students', {
     id: {
@@ -38,8 +65,13 @@ export const StudentModel = sequelize.define<Student>('students', {
     regNo: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: () => Math.floor(Math.random() * 1000000),
+        defaultValue: () => (regNoGenerator()),
         unique: true
+    },
+    student_uniqueId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: () => uuidv4()
     },
     dateOfBirth: {
         type: DataTypes.STRING,
@@ -58,7 +90,10 @@ export const StudentModel = sequelize.define<Student>('students', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    isVerified: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    }
 
 }, { freezeTableName: true, tableName: "students", timestamps: true });
-
-StudentModel.hasOne(SessionModel);

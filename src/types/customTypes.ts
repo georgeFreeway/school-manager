@@ -1,19 +1,15 @@
 export type StudentType = {
-    id?: number | null;
+    id?: number;
     firstname: string;
     lastname: string;
     email: string;
     role?: string;
     telephone: number;
-    regNo: string;
+    regNo?: string;
     dateOfBirth: string,
     password: string;
     verificationCode?: string;
     passwordResetCode?: string | null;
     isVerified?: boolean; 
-}
-
-export type StudentSession = {
-    id: number;
-    valid: boolean;
+    student_uniqueId?: string;
 }

@@ -1,6 +1,6 @@
 import { StudentModel } from "../models/student.model";
-import { StudentType } from "../types/customTypes";
 import * as argon from 'argon2';
+import { StudentType } from "../types/customTypes";
 
 export const registerStudents = async (student: StudentType) => {
     const hash = await argon.hash(student.password);
